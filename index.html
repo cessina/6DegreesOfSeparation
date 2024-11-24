@@ -22,9 +22,60 @@
             <button type="submit">Connect</button>
         </form>
         <div class="connection">
-            <p>hguifh</p>
+            <p></p>
         </div>
     </div>
+    
+    <script>
+        console.log("hello world");
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.querySelector("form");
+    const connectionDiv = document.querySelector(".connection");
+
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault(); // Prevent form from reloading the page
+
+        // Get the input values
+        const actor1 = form.actor1.value.trim();
+        const actor2 = form.actor2.value.trim();
+
+        // Validate inputs
+        if (!actor1 || !actor2) {
+            alert("Please enter both actor names.");
+            return;
+        }
+
+        // Make an API request
+        try {
+            const response = await fetch("http://127.0.0.1:5000/find_connection", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ actor1, actor2 }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch the connection.");
+            }
+
+            const data = await response.json();
+
+            // Display the result
+            connectionDiv.style.display = "block";
+            connectionDiv.innerHTML = "<h4>Connection:</h4>" +
+            "<p>" + data.path.map(function(step) {
+             return step.actor + " in " + step.movie;
+             }).join(" → ") + "</p>";
+            
+        } catch (error) {
+            connectionDiv.style.display = "block";
+            connectionDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+        }
+    });
+});
+    </script>
+    
     
 </body>
 </html>
